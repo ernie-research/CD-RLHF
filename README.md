@@ -1,6 +1,10 @@
-# Curiosity-Driven Reinforcement Learning from Human Feedback
+# [Curiosity-Driven Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2501.11463)
 
-This repository contains the source code for reproducing the CD-RLHF. We implement CD-RLHF based on DeepSpeed-Chat.
+  <a href="https://arxiv.org/abs/2501.11463" target="_blank">
+      <img alt="Paper" src="https://img.shields.io/badge/📜-Paper-purple" />
+   </a>
+
+This repository contains the source code for reproducing the [CD-RLHF](https://arxiv.org/pdf/2501.11463). We implement CD-RLHF based on DeepSpeed-Chat.
 
 ## Get Started
 
@@ -118,4 +122,17 @@ python evaluation/gpt4-eval.py \
     --model_name_b ./results/generated/${dataset}/${actor_model_name_b}-sampled.jsonl \
     --output ${PROJ_PATH}/results/${dataset}/${actor_model_name_a}-v.s.-${actor_model_name_b}.jsonl \
     --sk ${OPENAI_SK}
+```
+
+## Citation
+```
+@misc{sun2025curiositydrivenreinforcementlearninghuman,
+      title={Curiosity-Driven Reinforcement Learning from Human Feedback}, 
+      author={Haoran Sun and Yekun Chai and Shuohuan Wang and Yu Sun and Hua Wu and Haifeng Wang},
+      year={2025},
+      eprint={2501.11463},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2501.11463}, 
+}
 ```
