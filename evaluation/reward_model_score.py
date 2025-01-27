@@ -26,12 +26,12 @@ def get_reward_score(reward_model, tokenizer, prompts, responses, prompt_length)
     tokenizer.padding_side = 'left'
     return reward_score
 
-def process_data(rank, gpu, prompts, chosens, rejecteds, args, return_dict):
+def process_data(rank, prompts, chosens, rejecteds, args, return_dict):
     torch.manual_seed(1234)
     
     tokenizer = AutoTokenizer.from_pretrained(f"{args.model_path}/actor", device_map='cuda')
     tokenizer.padding_side = 'left'
-    model = AutoModelForCausalLM.from_pretrained(f"{args.model_path}/actor", device_map=f"cuda:{gpu}", torch_dtype=torch.float16)
+    model = AutoModelForCausalLM.from_pretrained(f"{args.model_path}/actor", device_map=f"cuda:{rank}", torch_dtype=torch.float16)
     generated_results = []
     
     inferences = []
@@ -40,17 +40,17 @@ def process_data(rank, gpu, prompts, chosens, rejecteds, args, return_dict):
     batch_size = args.batch_size
     if not args.ref_scores:
         with torch.no_grad():
-            for i in tqdm(range(0, len(prompts), batch_size), desc=f"GPU {gpu}"):
+            for i in tqdm(range(0, len(prompts), batch_size), desc=f"Rank {rank}"):
                 inputs = tokenizer.batch_encode_plus(prompts[i: i + batch_size], return_tensors="pt", truncation=True, max_length=1024, padding=True).to(model.device)
                 response = generate_response(model, tokenizer, 0.8, inputs)
                 generated_results.append(response)
     del model
     torch.cuda.empty_cache()
     
-    reward_model = create_critic_model(args.reward_model, tokenizer, None, rlhf_training=True).half().cuda(gpu)
+    reward_model = create_critic_model(args.reward_model, tokenizer, None, rlhf_training=True).half().cuda(rank)
     reward_model.eval()
     with torch.no_grad():
-        for i in tqdm(range(0, len(prompts), batch_size), desc=f"GPU {gpu}"):
+        for i in tqdm(range(0, len(prompts), batch_size), desc=f"Rank {rank}"):
             if args.ref_scores:
                 chosen_reward_score = get_reward_score(reward_model, tokenizer, prompts[i: i + batch_size], chosens[i: i + batch_size], 2)
                 rejected_reward_score = get_reward_score(reward_model, tokenizer, prompts[i: i + batch_size], rejecteds[i: i + batch_size], 2)
@@ -108,8 +108,8 @@ def main():
     return_dict = manager.dict()
     processes = []
 
-    for rank, gpu in enumerate(gpus):
-        p = mp.Process(target=process_data, args=(rank, gpu, *chunks[rank], args, return_dict))
+    for rank in gpus:
+        p = mp.Process(target=process_data, args=(rank, *chunks[rank], args, return_dict))
         p.start()
         processes.append(p)
 
@@ -118,11 +118,11 @@ def main():
 
     # Combine results
     all_inferences = []
-    for rank in range(len(gpus)):
+    for rank in gpus:
         all_inferences.extend(return_dict[rank])
 
     # Save to file
-    dataset_name = args.dataset.split('/')[-1]
+    dataset_name = args.dataset_path.split('/')[-1]
     os.makedirs(f"./results/rewards/{dataset_name}", exist_ok=True)
     with open(f'./results/rewards/{dataset_name}/{args.model_name}.jsonl', 'w') as f:
         for inference in all_inferences:

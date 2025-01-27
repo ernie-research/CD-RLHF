@@ -58,7 +58,7 @@ if __name__ == "__main__":
         args.model_name = args.model_path.split('/')[-2]
     prompts = get_prompts(args.dataset_path, 500)
 
-    gpus = args.gpus.split(',')
+    gpus = [int(x) for x in args.gpus.split(',')]
     num_gpus = len(gpus)
     data_chunks = [prompts[i::num_gpus] for i in range(num_gpus)]
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     for key in return_dict.keys():
         inferences.extend(return_dict[key])
 
-    dataset_name = args.dataset.split('/')[-1]
+    dataset_name = args.dataset_path.split('/')[-1]
     os.makedirs(f'./results/generated/{dataset_name}', exist_ok=True)
     with open(f'./results/generated/{dataset_name}/{args.model_name}.jsonl', 'w') as f:
         for inference in inferences:
