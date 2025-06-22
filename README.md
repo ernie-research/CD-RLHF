@@ -1,10 +1,21 @@
-# [Curiosity-Driven Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2501.11463)
+# [ACL'25 | Curiosity-Driven Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2501.11463)
 
   <a href="https://arxiv.org/abs/2501.11463" target="_blank">
       <img alt="Paper" src="https://img.shields.io/badge/📜-Paper-purple" />
    </a>
+  <a href="https://2025.aclweb.org/" target="_blank">
+      <img alt="ACL 2025" src="https://img.shields.io/badge/Proceedings-ACL2025-red" />
+   </a>
 
-This repository contains the source code for reproducing the [CD-RLHF](https://arxiv.org/pdf/2501.11463). We implement CD-RLHF based on DeepSpeed-Chat.
+
+The official repository which contains the source code for our paper [CD-RLHF](https://arxiv.org/abs/2501.11463).
+
+
+## 🔥 News
+* **15 May, 2025:** 🎉 We release the official codebase ([`ernie-research/CD-RLHF`](https://github.com/ernie-research/CD-RLHF/)). Stay tuned!🔥
+* **15 May, 2025:** 🎉 Our work has been accepted to [ACL 2025](https://2025.aclweb.org/)! 
+
+
 
 ## Get Started
 
